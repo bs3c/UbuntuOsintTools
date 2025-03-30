@@ -68,7 +68,7 @@ echo "[*] Installing misc CLI utilities..."
 sudo apt install -y \
     lynx w3m irssi mutt cmatrix figlet toilet lolcat cowsay fortune \
     toilet btop unzip ranger htop sshpass
-    
+
 # --- Anonymity & Secure Browsing ---
 echo "[*] Installing anonymous browsing tools..."
 
@@ -107,12 +107,31 @@ go install github.com/OWASP/Amass/v3/...@latest
 
 go install github.com/khast3x/h8mail@latest
 
-# --- Python Tools ---
+# --- Python Tools & pyenv Setup ---
+echo "[*] Installing pyenv..."
+curl https://pyenv.run | bash
+
+# Add pyenv init to shell
+export PYENV_ROOT="$HOME/.pyenv"
+export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+eval "$(pyenv virtualenv-init -)"
+
+# Install common Python versions for tool compatibility
+pyenv install 3.8.18 -s
+pyenv install 3.10.13 -s
+pyenv global 3.10.13
+
 echo "[*] Installing Python-based tools..."
 pip3 install --upgrade pip
 pip3 install youtube-dl yt-dlp shodan wafw00f webscreenshot \
     arjun xsrfprobe social-analyzer sherlock h8mail spiderfoot holehe \
     intelx leaklooker pypff
+
+# --- Make Go and Python tools globally accessible ---
+echo "[*] Moving Go and Python tools to /usr/local/bin..."
+sudo cp ~/go/bin/* /usr/local/bin/ 2>/dev/null || true
+sudo cp ~/.local/bin/* /usr/local/bin/ 2>/dev/null || true
 
 # --- GUI Tools ---
 echo "[*] Installing GUI tools..."
