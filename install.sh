@@ -39,7 +39,15 @@ sudo apt install -y \
 echo "[*] Installing web hacking & enumeration tools..."
 sudo apt install -y \
     sqlmap nikto gobuster dirb wfuzz ffuf whatweb wpscan \
-    feroxbuster eyewitness
+    feroxbuster
+
+# Install Eyewitness manually from GitHub
+cd /opt
+sudo git clone https://github.com/FortyNorthSecurity/EyeWitness.git
+cd EyeWitness
+sudo ./setup/setup.sh
+sudo ln -sf /opt/EyeWitness/EyeWitness.py /usr/local/bin/eyewitness
+cd ~
 
 # --- Recon & OSINT ---
 echo "[*] Installing recon & OSINT tools..."
@@ -130,8 +138,13 @@ pip3 install youtube-dl yt-dlp shodan wafw00f webscreenshot \
 
 # --- Make Go and Python tools globally accessible ---
 echo "[*] Moving Go and Python tools to /usr/local/bin..."
-sudo cp ~/go/bin/* /usr/local/bin/ 2>/dev/null || true
-sudo cp ~/.local/bin/* /usr/local/bin/ 2>/dev/null || true
+sudo find ~/go/bin/ -type f -executable -exec cp {} /usr/local/bin/ \;
+sudo find ~/.local/bin/ -type f -executable -exec cp {} /usr/local/bin/ \;
+
+# --- Ensure all /opt tool scripts are globally accessible ---
+echo "[*] Linking tools from /opt to /usr/local/bin..."
+sudo find /opt -type f -name "*.py" -exec chmod +x {} \;
+sudo find /opt -type f -name "*.py" -exec sh -c 'ln -sf "$1" "/usr/local/bin/$(basename "$1" .py)"' _ {} \;
 
 # --- GUI Tools ---
 echo "[*] Installing GUI tools..."
@@ -153,3 +166,38 @@ echo "alias ..='cd ..'" >> ~/.bashrc
 echo "neofetch" >> ~/.bashrc
 
 echo "[✓] Terminal and GUI tools (including OSINT) installed successfully. Restart your shell or run: source ~/.bashrc"
+
+# --- OSINT Tool Menu ---
+echo "[*] Creating OSINT tool launcher..."
+
+cat <<EOF > ~/osint-menu.sh
+#!/bin/bash
+
+while true; do
+  clear
+  echo "===== 🔍 OSINT Tool Menu ====="
+  echo "1. Run TheHarvester"
+  echo "2. Run Subfinder"
+  echo "3. Run Amass"
+  echo "4. Run Spiderfoot (web)"
+  echo "5. Run EyeWitness"
+  echo "6. Exit"
+  echo
+  read -p "Select a tool: " choice
+
+  case \$choice in
+    1) theharvester ;;
+    2) subfinder -d example.com ;;
+    3) amass enum -d example.com ;;
+    4) xdg-open http://localhost:5001 || firefox http://localhost:5001 ;;
+    5) eyewitness ;;
+    6) exit ;;
+    *) echo "Invalid option"; sleep 1 ;;
+  esac
+done
+EOF
+
+chmod +x ~/osint-menu.sh
+sudo ln -sf ~/osint-menu.sh /usr/local/bin/osint-menu
+
+echo "[*] You can now launch the OSINT menu anytime with: osint-menu"
