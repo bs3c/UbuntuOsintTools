@@ -21,7 +21,7 @@ sudo apt install -y \
 echo "[*] Installing terminal productivity tools..."
 sudo apt install -y \
     tmux zoxide fzf ripgrep bat ncdu micro vim nano ranger \
-    exa fd-find tldr entr httpie
+    eza fd-find tldr entr httpie
 
 # --- Networking & Scanning ---
 echo "[*] Installing networking & scanning tools..."
