@@ -141,10 +141,15 @@ echo "[*] Moving Go and Python tools to /usr/local/bin..."
 sudo find ~/go/bin/ -type f -executable -exec cp {} /usr/local/bin/ \;
 sudo find ~/.local/bin/ -type f -executable -exec cp {} /usr/local/bin/ \;
 
+# Ensure pyenv shims are accessible globally
+if [ -d "$HOME/.pyenv/shims" ]; then
+  sudo find "$HOME/.pyenv/shims" -type f -executable -exec cp {} /usr/local/bin/ \;
+fi
+
 # --- Ensure all /opt tool scripts are globally accessible ---
 echo "[*] Linking tools from /opt to /usr/local/bin..."
-sudo find /opt -type f -name "*.py" -exec chmod +x {} \;
-sudo find /opt -type f -name "*.py" -exec sh -c 'ln -sf "$1" "/usr/local/bin/$(basename "$1" .py)"' _ {} \;
+sudo find /opt -type f \( -name "*.py" -o -name "*.sh" -o -perm -111 \) -exec chmod +x {} \;
+sudo find /opt -type f \( -name "*.py" -o -name "*.sh" -o -perm -111 \) -exec sh -c 'ln -sf "$1" "/usr/local/bin/$(basename "$1" | cut -d. -f1)"' _ {} \;
 
 # --- GUI Tools ---
 echo "[*] Installing GUI tools..."
