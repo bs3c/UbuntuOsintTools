@@ -68,6 +68,25 @@ echo "[*] Installing misc CLI utilities..."
 sudo apt install -y \
     lynx w3m irssi mutt cmatrix figlet toilet lolcat cowsay fortune \
     toilet btop unzip ranger htop sshpass
+    
+# --- Anonymity & Secure Browsing ---
+echo "[*] Installing anonymous browsing tools..."
+
+# Google Chrome
+echo "[*] Installing Google Chrome..."
+wget -q -O google-chrome.deb https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+sudo dpkg -i google-chrome.deb || sudo apt -f install -y
+rm google-chrome.deb
+
+# Tor Browser & Tools
+echo "[*] Installing Tor Browser & tools..."
+sudo apt install -y torbrowser-launcher torsocks nyx
+
+# Docker
+echo "[*] Installing Docker..."
+sudo apt install -y docker.io docker-compose
+sudo systemctl enable docker
+sudo usermod -aG docker $USER
 
 # --- Go Tools ---
 echo "[*] Installing Go-based tools..."
